@@ -71,7 +71,7 @@
                     </div>
                     <div class="text-end text-light me-2">
                      <p class="text-light">total Harga Semua Produk : Rp.{{ totalPrice }}</p>
-                     <button class="btn btn-warning">Check-in All Now</button>
+                     <button class="btn btn-warning" @click="showErr">Check-in All Now</button>
                     </div>
                 </div>
                 <div v-else class="mt-5">
@@ -312,6 +312,9 @@
                 }
             },
             methods: {
+                showErr(){
+                    alert("Maaf tampaknya fitur masi memiliki bug/brlum dibuat");
+                }
                 sucTrans(){
                     for(let i = 0; i < this.dataKeranjang.length ; i++){
                      if(this.dataKeranjang[i].kondisi == true){
