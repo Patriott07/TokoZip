@@ -82,7 +82,7 @@
 
         <!-- produkHot -->
         <div class="container-fluid m-0 p-0 mb-5">
-            <div :class="{toastF : info.info }" class="tos position-absolute top-0 end-0 me-3 mt-3 bg-light p-2" style="max-width: 600px; z-index: 99; border-radius: 3px;">
+            <div :class="{toastF : info.info }" class="tos position-fixed top-0 end-0 me-3 mt-3 bg-light p-2" style="max-width: 600px; z-index: 99; border-radius: 3px;">
                 <div class="row align-items-center">
                     <div class="col-5 me-2">
                         <strong class="form-text">{{ info.from }}</strong>
@@ -98,7 +98,8 @@
                 </div>
               </div>
 
-            <t-header @toggle-ker="toggleKer"></t-header>
+            <t-header @toggle-ker="toggleKer" @toggle-keb="showErr"></t-header>
+
             <main class="container">
                 <div class="hot mt-5">
                     <h3 class="text-center">Discount And Hot</h3>
@@ -180,7 +181,7 @@
                         <div class="modal-dialog">
                           <div class="modal-content">
                             <div class="modal-header">
-                              <h5 class="modal-title" id="exampleModalLabel">New message</h5>
+                              <h5 class="modal-title" id="exampleModalLabel">Transaksi Anda</h5>
                               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
@@ -237,7 +238,7 @@
                         <p>Zipp store adalah sebuah tempat penyediaan kebutuhan sehari hari. Kmi menggunakan jasa
                             layanan Sampai Antar Rumah. ayo Penuhi kebutuhan anda</p>
                         <button class="btn-warning btn me-3 my-3" @click="$emit('toggle-ker')">Keranjang saya</button>
-                        <button class="btn-dark btn text-light">Baca Kebijakan</button>
+                        <button class="btn-dark btn text-light" @click="$emit('toggle-keb')">Baca Kebijakan</button>
                     </div>
                 </div>
             </header>
