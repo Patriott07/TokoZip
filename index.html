@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zipp Market</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <style>
+        header {
+            background-image: url("https://images.unsplash.com/photo-1576562331281-d09e46af9854?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1032&q=80");
+            background-repeat: no-repeat;
+            height: 100vh;
+            background-size: cover;
+
+        }
+
+        ::-webkit-scrollbar {
+            display: none;
+        }
+
+        hr {
+            color: orange;
+        }
+
+        a {
+            cursor: pointer;
+        }.toastF{
+            opacity: 1!important;
+            transition: all 1s;
+        }.tos{
+            opacity: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app" class="">
+        <!-- left bar -->
+        <div id="toggleKeruk" v-if="toggleKeranjang" class="position-fixed bg-dark py-5 px-3"
+            style="width: 50%; z-index: 33; height: 100vh; overflow-y: auto;">
+            <div class="d-flex-column flex-wrap">
+                <div class="row">
+                    <div class="col-10">
+                        <h6 class="text-warning">Keranjang saya</h6>
+                    </div>
+                    <div class="col-2">
+                        <a @click="toggleKer" class="text-light nav-link fs-6">X</a>
+                    </div>
+                </div>
+
+                <hr>
+                <div v-if="dataKeranjang.length">
+                    <div v-for="(data , index) in dataKeranjang">
+                        <div class="row align-items-end">
+                            <div class="col-lg-4 col-md-6">
+                                <img :src="data.img" alt="" class="img-fluid mb-3" style="border-radius: 5px;">
+                            </div>
+                            <div class="col-lg-4 col-md-6 text-light">
+                                <h6>{{ data.title }}</h6>
+                                <p>Jumlah barang : {{ data.count }} | {{ data.type }}</p>
+                                <p>Total Harga barang : <br> Rp. {{ data.total }}</p>
+                            </div>
+                            <div class="col-lg-4 col-md-6 offset-md-6 offset-lg-0">
+                                <button class="btn btn-secondary me-2 mt-2 mb-2" @click="hapusDKer(index)">Cancel</button>
+                                <button @click="checkIn(index)" class="btn btn-success me-2 mt-2 mb-2" @click="buyItemKer" data-bs-toggle="modal" data-bs-target="#exampleModal1" data-bs-whatever="@getbootstrap">Check-in</button>
+                            </div>
+                        </div>
+                        <hr>
+                    </div>
+                    <div class="text-end text-light me-2">
+                     <p class="text-light">total Harga Semua Produk : Rp.{{ totalPrice }}</p>
+                     <button class="btn btn-warning">Check-in All Now</button>
+                    </div>
+                </div>
+                <div v-else class="mt-5">
+                    <p class="text-center text-light">No One Items Here</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- produkHot -->
+        <div class="container-fluid m-0 p-0 mb-5">
+            <div :class="{toastF : info.info }" class="tos position-absolute top-0 end-0 me-3 mt-3 bg-light p-2" style="max-width: 600px; z-index: 99; border-radius: 3px;">
+                <div class="row align-items-center">
+                    <div class="col-5 me-2">
+                        <strong class="form-text">{{ info.from }}</strong>
+                    </div>
+                    <div class="col-6 text-end">
+                         <span class="form-text me-2">1 second ago</span>
+                         <span class="fs-6">X</span>
+                    </div> 
+                </div>
+                <hr>
+                <div>
+                    <p>{{ info.message }}</p>
+                </div>
+              </div>
+
+            <t-header @toggle-ker="toggleKer"></t-header>
+            <main class="container">
+                <div class="hot mt-5">
+                    <h3 class="text-center">Discount And Hot</h3>
+                    <t-content-card-hot :dataCurent="dataCurent" :title="dataDiscountHot" @countplus="countdPlus"
+                        @countmin="countdMin" @buy="buy" @max-items="maxItemsP"></t-content-card-hot>
+                    <!-- <div class="d-flex flex-wrap justify-content-center gap-3 mt-5">
+                        <div  v-for="(data , index) in dataDiscountHot" class="card" style="width: 18rem;">
+                            <img :src="data.img" class="card-img-top" alt="..." style="max-width: cover; max-height: 200px;">
+                            <div class="card-body p-2">
+                                <h5 class="card-title">{{ data.title }}</h5>
+                                <p class="card-text">{{ limitTextLength(data.des, 30) }}</p>
+
+                                    <div class="row justify-content-between">
+                                        <div class="col-12">
+                                           <p> <span href="#" class="btn btn-dark px-3">Rp: {{ data.harga * data.count }} </span> | {{ data.type }} : <span>{{ data.count }}</span></p>
+                                        </div>
+                                    </div>
+                                    <div class="my-2">
+                                        <a @click.prevent="countdPlus(index)" href="#" class="me-2 btn btn-warning px-3">+</a>
+                                        <a @click.prevent="countdMin(index)" href="#" class="me-2 btn btn-warning px-3">-</a>
+                                        <a href="#" class="btn btn-success px-3">Buy</a>
+                                    </div>
+                            </div>
+                        </div>
+                        
+                    </div> -->
+
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                        aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-body p-3">
+                                    <div style="width: 100%" class="mb-3">
+                                        <img :src="dataCurent.img" alt="" class="card-img-top"
+                                            style="max-width: cover; max-height: 300px; border-radius: 10px;">
+                                    </div>
+                                    <h5>{{ dataCurent.title }}</h5>
+                                    <p class="form-text">{{ dataCurent.des }}</p>
+                                    Ket : <br>
+                                    <ul class="my-3">
+                                        <li>Stok-barang : {{ dataCurent.stok }}</li>
+                                        <li>Harga Per {{ dataCurent.type }} : {{ dataCurent.harga }}</li>
+                                    </ul>
+
+                                    <div class="row justify-content-between">
+                                        <div class="col-6">
+                                            <p> <span href="#" class="btn btn-dark px-3">Rp: {{ dataCurent.harga *
+                                                    dataCurent.count }} </span> | {{ dataCurent.type }} : <span>{{
+                                                    dataCurent.count
+                                                    }}</span></p>
+                                        </div>
+                                        <div class="col-4 offset-2">
+                                            <div class="my-2">
+                                                <a @click.prevent="dataCurent.count++" href="#"
+                                                    class="me-2 btn btn-warning px-3">+</a>
+                                                <a @click.prevent="dataCurent.count--" href="#"
+                                                    class="me-2 btn btn-warning px-3">-</a>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-success" data-bs-dismiss="modal"
+                                        @click="addKeranjang">Tambahkan ke
+                                        Keranjang</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- modal transaksi -->                    
+                    <div class="modal fade" id="exampleModal1" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h5 class="modal-title" id="exampleModalLabel">New message</h5>
+                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                              <form>
+                                <div class="mb-3">
+                                  <label for="recipient-name" class="col-form-label">Penerima :</label>
+                                  <input type="text" class="form-control" id="recipient-name" disabled value="Pedagang">
+                                  <p class="form-text">Pesan anda akan dikirim ke Pedagang</p>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="recipient-name" class="col-form-label">Total Harga :</label>
+                                    <input type="text" disabled :value="`Rp. ${hargaTrans.harga}`"  class="form-control">
+                                </div>
+                                <div class="mb-3">
+                                    Transaksi :
+                                    <select class="form-select" aria-label="Default select example">
+                                        <option selected>Transfer Via</option>
+                                        <option value="1">Bank Bni</option>
+                                        <option value="2">Debit</option>
+                                        <option value="3">Dana</option>
+                                        <option value="4">Another Way . .</option>
+                                      </select>
+                                </div>
+                                <div class="mb-3">
+                                  <label for="message-text" class="col-form-label">Tambahkan Catatan :</label>
+                                  <textarea class="form-control" id="message-text" placeholder="Examp : Tolong nanti kresek nya di double ya mas/mba! "></textarea>
+                                  <p class="form-text">Tambahkan catatan untuk menginformasikan sesuatu ke pedagang</p>
+                                </div>
+                                
+                              </form>
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                              <button type="button" class="btn btn-success" @click="sucTrans" data-bs-toggle="modal" data-bs-target="#exampleModal1" data-bs-whatever="@getbootstrap">Mulai transaksi</button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                </div>
+            </main>
+        </div>
+    </div>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+    <script>
+        const header = {
+            props: [],
+            template: `
+            <header>
+                <div class="position-absolute translate-middle top-50 start-50">
+                    <div class="fw-bold text-light col-12 p-3">
+                        <h3>Welcome to Zipp Store</h3>
+                        <p>Zipp store adalah sebuah tempat penyediaan kebutuhan sehari hari. Kmi menggunakan jasa
+                            layanan Sampai Antar Rumah. ayo Penuhi kebutuhan anda</p>
+                        <button class="btn-warning btn me-3 my-3" @click="$emit('toggle-ker')">Keranjang saya</button>
+                        <button class="btn-dark btn text-light">Baca Kebijakan</button>
+                    </div>
+                </div>
+            </header>
+            `
+        }
+
+        const produkHot = {
+            props: ['title'],
+            data() {
+                return {
+                    dataApp: this.title,
+                }
+            },
+            template: `
+                   <div class="d-flex flex-wrap justify-content-center gap-3 mt-5">
+                        <div  v-for="(data , index) in dataApp" class="card" style="width: 18rem;">
+                            <img :src="data.img" class="card-img-top" alt="..." style="max-width: cover; height: 200px;">
+                            <div class="card-body p-2">
+                                <h5 class="card-title">{{ data.title }}</h5>
+                                <p class="card-text">{{ limitTextLength(data.des, 30) }}</p>
+
+                                    <div class="row justify-content-between">
+                                        <div class="col-12">
+                                           <p> <span href="#" class="btn btn-dark px-3">Rp: {{ data.harga * data.count }} </span> | {{ data.type }} : <span>{{ data.count }}</span></p>
+                                        </div>
+                                    </div>
+                                    <div class="my-2">
+                                        <a @click.prevent="$emit('countplus', index)" href="#" class="me-2 btn btn-warning px-3">+</a>
+                                        <a @click.prevent="$emit('countmin', index)" href="#" class="me-2 btn btn-warning px-3">-</a>
+                                        <a @click.prevent="$emit('max-items', index)" href="#" class="me-4 btn btn-secondary px-3">Max</a>
+                                        <a @click.prevent="$emit('buy', index)"href="#" class="btn btn-success px-3" data-bs-toggle="modal" data-bs-target="#exampleModal">Buy</a>
+                                    </div>
+                            </div>
+                        </div>  
+                    </div>
+            `,
+            methods: {
+                limitTextLength(text, maxLength) {
+                    const words = text.split(" "); //jd array
+                    const limitedWords = words.slice(0, maxLength); //masi array tapi udh dibatasin
+                    const limitedText = limitedWords.join(" "); // menghubungkan array menjadi satu string
+                    return limitedText;
+                },
+            }
+
+        }
+    </script>
+    <script>
+        const app = Vue.createApp({
+            components: {
+                't-header': header,
+                't-content-card-hot': produkHot,
+            },
+            data() {
+                return {
+                    info : {info : false , from: "Zipp Storee" , message : "Terimakasih telah menggunakan jasa kami, barangmu akan segera terkirim"},
+                    hargaTrans : {harga : 0, stok: 0, index: 0 , count : 0},
+                    toggleKeranjang: false,
+                    dataDiscountHot: [
+                        {kondisi:false , i: 0 ,img: "https://media.istockphoto.com/id/1200996361/id/foto/sekelompok-anggur-organik.jpg?s=612x612&w=0&k=20&c=qa-JJmAFV4y6PsvkYA6z81rYZnzuNlp4Fkezr7RJvOk=", title: "Anggur", harga: 23000, count: 1, stok: 30, type: "Kg", des: "Anggur buah segar di petik dari kebun jepang" },
+                        {kondisi:false , i: 1 ,img: "https://media.istockphoto.com/id/162353134/id/foto/semangka.jpg?s=612x612&w=0&k=20&c=uU8LIb9J97bEodejtg7mEtt6jIicIeDCQSVsn_WBO-M=", title: "Semangka", harga: 45000, count: 1, stok: 30, type: "Buah", des: "Semangka segar, yg diproses dan dikirm dari singapura" },
+                        {kondisi:false , i: 2 ,img: "https://media.istockphoto.com/id/614871876/id/foto/apel-terisolasi-di-latar-belakang-kayu.jpg?s=612x612&w=0&k=20&c=CKvf1TbsSXmltQzAB9tJkt4NcgOhFTAAem-6748ud9U=", title: "Apple", harga: 27000, count: 1, stok: 60, type: "Kg", des: "Apple Manis, baru dipetik langsung dari indramayu" },
+                        {kondisi:false , i: 3 ,img: "https://media.istockphoto.com/id/882818032/id/foto/utuh-setengah-dengan-irisan-melon-jepang-melon-oranye-atau-melon-cantaloupe-terisolasi-dengan.jpg?s=612x612&w=0&k=20&c=ZpRENSQ-U0PuVStFYC5DxgXZPferQbbrQfHJ04A7j0g=", title: "Melon", harga: 33000, count: 1, stok: 30, type: "Buah", des: "Melon asli jepang, rasanya manis dan unik" },
+                        {kondisi:false , i: 4 ,img: "https://media.istockphoto.com/id/1404444404/id/foto/latar-belakang-cabai-merah-cabai-merah-segar-untuk-dijual-di-supermarket.jpg?s=612x612&w=0&k=20&c=QyicxbhSR6NFn7_ujiZnoZb6uRN-CBMMI8mNAl4zTas=", title: "Cabai Merah", harga: 28000, count: 1, stok: 30, type: "Kg", des: "Cabai merah hasil olahan dan tanam dari Cirebon" },
+                        {kondisi:false , i: 5 ,img: "https://media.istockphoto.com/id/163729647/id/foto/gambaran-dari-dekat-kacang-kacangan-organik.jpg?s=612x612&w=0&k=20&c=mv_bCbDOOhtY3Rv1Vqsq6Wos7z7knyPx7YxbofbqpVg=", title: "Kacang", harga: 29000, count: 1, stok: 30, type: "Kg", des: "Kacang Import hasil tanam dari malaysia" },
+                    ],
+                    dataCurent: { img: "https://images.unsplash.com/photo-1631299106224-aae61c217164?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGdyYXBlfGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60", title: "Anggur", harga: 23000, count: 1, stok: 30, type: "Kg", des: "Anggur buah segar di petik dari kebun jepang" },
+                    dataKeranjang: [
+
+                    ],
+                    totHargaAllPro : 0,
+                }
+            },
+            methods: {
+                sucTrans(){
+                    for(let i = 0; i < this.dataKeranjang.length ; i++){
+                     if(this.dataKeranjang[i].kondisi == true){
+                        this.dataKeranjang.splice(i ,1);
+                     }
+                  }
+                  this.dataDiscountHot[this.hargaTrans.index].stok -= this.hargaTrans.count;
+                  this.info.info = true;
+                  setTimeout(()=>{
+                    this.info.info = false
+                  },4000);
+                },
+                checkIn(index){
+                    this.dataKeranjang[index].kondisi = true
+                    this.hargaTrans.count = this.dataKeranjang[index].count;
+                    this.hargaTrans.index = this.dataKeranjang[index].i;
+                    this.hargaTrans.harga = this.dataKeranjang[index].total;
+                    this.hargaTrans.stok = this.dataKeranjang[index].stok;
+                },
+                hapusDKer(index){
+                    this.dataKeranjang.splice(index, 1);
+                },
+                maxItemsP(index) {
+                    this.dataDiscountHot[index].count = this.dataDiscountHot[index].stok;
+                },
+                toggleKer() {
+                    this.toggleKeranjang = !this.toggleKeranjang;
+                },
+                limitTextLength(text, maxLength) {
+                    const words = text.split(" "); //jd array
+                    const limitedWords = words.slice(0, maxLength); //masi array tapi udh dibatasin
+                    const limitedText = limitedWords.join(" "); // menghubungkan array menjadi satu string
+                    return limitedText;
+                },
+                countdMin(index) {
+                    if (this.dataDiscountHot[index].count > 1) {
+                        this.dataDiscountHot[index].count -= 1
+                    } else {
+                        alert("Minimal Beli satu ya kak Hehehe..");
+                    }
+                },
+                countdPlus(index) {
+                    // console.log('countplus', index);
+                    if (this.dataDiscountHot[index].count >= this.dataDiscountHot[index].stok) {
+                        alert("Maaf stok Kami tidak memnuhi permintaan");
+                    } else {
+                        this.dataDiscountHot[index].count++
+                    }
+                },
+                buy(index) {
+                    this.dataCurent = this.dataDiscountHot[index];
+                },
+                addKeranjang() {
+                    const newD = {
+                        i : this.dataCurent.i,
+                        img: this.dataCurent.img,
+                        title: this.dataCurent.title,
+                        harga: this.dataCurent.harga,
+                        count: this.dataCurent.count,
+                        stok: this.dataCurent.stok,
+                        type: this.dataCurent.type,
+                        des: this.dataCurent.des,
+                        total: this.dataCurent.harga * this.dataCurent.count
+                    }
+                    this.dataCurent = {};
+                    this.dataKeranjang.unshift(newD);
+                },
+            },
+
+            mounted() {
+
+            },
+            computed: {
+                 totalPrice(){
+                    var price = 0
+                    for(let i = 0 ; i < this.dataKeranjang.length; i++){
+                    price += this.dataKeranjang[i].total;
+                   }
+                   return price;
+                   
+                 }
+            }
+        })
+
+        app.mount("#app");
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"
+        integrity="sha384-fbbOQedDUMZZ5KreZpsbe1LCZPVmfTnH7ois6mU1QK+m14rQ1l2bGBq41eYeM/fS"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
